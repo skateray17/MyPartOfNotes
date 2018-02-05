@@ -24,6 +24,7 @@ class Mailer {
                 to: email,
                 subject: 'Password changing confirmition ✔',
                 text: `To change your password enter: ${passwordResetHash}`,
+                html: `<h1>To change your password enter:</h1><h4>${passwordResetHash}</h4>`,
             };
         
             this.transporter.sendMail(mailOptions, (error) => {
@@ -34,4 +35,4 @@ class Mailer {
     }
 }
 
-module.exports = Mailer;
+module.exports = new Mailer();

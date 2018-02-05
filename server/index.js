@@ -9,6 +9,7 @@ const MongoStore = require('connect-mongo')(expressSession);
 const dbName = 'notesDB';
 const connectionString = `mongodb://localhost:27017/${dbName}`;
 
+//const connectionString = 'mongodb+srv://skateray17:Qu16TDFtDqoRoot5@mycluster0-shard-00-00.mongodb.net:27017,mycluster0-shard-00-01.mongodb.net:27017,mycluster0-shard-00-02.mongodb.net:27017/admin?ssl=true&replicaSet=Mycluster0-shard-0&authSource=admin';
 mongoose.connect(connectionString);
 
 app.use(expressSession({
@@ -16,7 +17,7 @@ app.use(expressSession({
     resave: true,
     saveUninitialized: true,
     store: new MongoStore({
-        url: 'mongodb://localhost/test-app',
+        url: `${connectionString}-app`,
         ttl: 20 * 24 * 60 * 60 // = 20 days.
     })
 }));
