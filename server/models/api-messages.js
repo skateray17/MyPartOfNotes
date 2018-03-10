@@ -11,5 +11,6 @@ ApiMessages.PASSWORD_RESET_EMAIL_MISMATCH = 9;
 ApiMessages.COULD_NOT_RESET_PASSWORD = 10;
 ApiMessages.PASSWORD_CONFIRM_MICMATCH = 11;
 ApiMessages.COULD_NOT_CREATE_SESSION = 13;
+ApiMessages.INVALID_IND = 14;
 
 module.exports = ApiMessages;
