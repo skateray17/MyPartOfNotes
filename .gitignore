@@ -3,3 +3,4 @@ node_modules/
 js/
 server/secret-info
 .vscode/
+front/

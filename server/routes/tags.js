@@ -5,7 +5,7 @@ const ApiMessages = require('../models/api-messages');
 
 const router = express.Router();
 
-router.route('/notes/create')
+router.route('/tags/create')
   .post((req, res) => {
     if (!req.session.userProfileModel) {
       res.status(401).send('unauthorized');
@@ -15,9 +15,9 @@ router.route('/notes/create')
           res.send(new ApiResponse({ success: false, extras: { msg: ApiMessages.DB_ERROR } }));
         }
         if (result) {
-          const notes = result.notes;
-          notes.push(req.body.note);
-          Notes.update({ email: req.session.userProfileModel.email }, { notes }, (error) => {
+          const tags = result.tags;
+          tags.push(req.body.tag);
+          Notes.update({ email: req.session.userProfileModel.email }, { tags }, (error) => {
             if (error) {
               res.send(new ApiResponse({ success: false, extras: { msg: ApiMessages.DB_ERROR } }));
             } else {
@@ -31,7 +31,7 @@ router.route('/notes/create')
     }
   });
 
-router.route('/notes/get')
+router.route('/tags/get')
   .post((req, res) => {
     if (!req.session.userProfileModel) {
       res.status(401).send('unauthorized');
@@ -40,12 +40,12 @@ router.route('/notes/get')
         if (err) {
           res.send(new ApiResponse({ success: false, extras: { msg: ApiMessages.DB_ERROR } }));
         }
-        res.send(new ApiResponse({ success: true, extras: { notes: result.notes } }));
+        res.send(new ApiResponse({ success: true, extras: { tags: result.tags } }));
       });
     }
   });
 
-router.route('/notes/edit')
+router.route('/tags/edit')
   .post((req, res) => {
     if (!req.session.userProfileModel) {
       res.status(401).send('unauthorized');
@@ -54,12 +54,12 @@ router.route('/notes/edit')
         if (err) {
           res.send(new ApiResponse({ success: false, extras: { msg: ApiMessages.DB_ERROR } }));
         }
-        const notes = result.notes;
-        if (req.body.index >= notes.length || req.body.index < 0) {
+        const tags = result.tags;
+        if (req.body.index >= tags.length || req.body.index < 0) {
           res.send(new ApiResponse({ success: false, extras: { msg: ApiMessages.INVALID_IND } }));
         } else {
-          notes[req.body.index] = req.body.newNote;
-          Notes.update({ email: req.session.userProfileModel.email }, { notes }, (error) => {
+          tags[req.body.index] = req.body.newTag;
+          Notes.update({ email: req.session.userProfileModel.email }, { tags }, (error) => {
             if (error) {
               res.send(new ApiResponse({ success: false, extras: { msg: ApiMessages.DB_ERROR } }));
             } else {
@@ -71,7 +71,7 @@ router.route('/notes/edit')
     }
   });
 
-router.route('/notes/delete')
+router.route('/tags/delete')
   .post((req, res) => {
     if (!req.session.userProfileModel) {
       res.status(401).send('unauthorized');
@@ -80,12 +80,12 @@ router.route('/notes/delete')
         if (err) {
           res.send(new ApiResponse({ success: false, extras: { msg: ApiMessages.DB_ERROR } }));
         }
-        const notes = result.notes;
-        if (req.body.index >= notes.length || req.body.index < 0) {
+        const tags = result.tags;
+        if (req.body.index >= tags.length || req.body.index < 0) {
           res.send(new ApiResponse({ success: false, extras: { msg: ApiMessages.INVALID_IND } }));
         } else {
-          notes.splice(req.body.index, 1);
-          Notes.update({ email: req.session.userProfileModel.email }, { notes }, (error) => {
+          tags.splice(req.body.index, 1);
+          Notes.update({ email: req.session.userProfileModel.email }, { tags }, (error) => {
             if (error) {
               res.send(new ApiResponse({ success: false, extras: { msg: ApiMessages.DB_ERROR } }));
             } else {
@@ -97,9 +97,4 @@ router.route('/notes/delete')
     }
   });
 
-  router.route('/notes/test')
-  .post((req, res) => {
-    console.log(typeof (JSON.parse(req.body.test)));
-    res.send('');
-  });
 module.exports = router;

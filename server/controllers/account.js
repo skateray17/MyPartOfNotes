@@ -76,13 +76,21 @@ class AccountController {
                   success: false, extras: { msg: this.ApiMessages.DB_ERROR }
                 }));
               }
-              return callback(err, new this.ApiResponse({
-                success: true,
-                extras: {
-                  userProfileModel,
-                  sessionId: this.session.myid,
+              Notes.findOne({ email: cnf.email }, (alyrma, obj) => {
+                if (alyrma) {
+                  return callback(err, new this.ApiResponse({
+                    success: false, extras: { msg: this.ApiMessages.DB_ERROR }
+                  }));
                 }
-              }));
+                return callback(err, new this.ApiResponse({
+                  success: true,
+                  extras: {
+                    userProfileModel,
+                    sessionId: this.session.myid,
+                    data: obj,
+                  }
+                }));
+              });
             });
           } else {
             return callback(err, new this.ApiResponse({
@@ -124,7 +132,7 @@ class AccountController {
           success: false, extras: { msg: this.ApiMessages.EMAIL_ALREADY_EXISTS }
         }));
       }
-      new Notes({ email: newUser.email, notes: [] }).save((err1) => {
+      new Notes({ email: newUser.email, notes: [], tags: [], folders: [] }).save((err1) => {
         if (err1) {
           return callback(err, new this.ApiResponse({
             success: false, extras: { msg: this.ApiMessages.DB_ERROR }

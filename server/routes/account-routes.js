@@ -9,6 +9,8 @@ const ApiResponse = require('../models/api-response');
 const UserPasswordReset = require('../models/user-pwd-reset');
 const UserPasswordResetFinal = require('../models/user-pwd-reset-final');
 const UserPasswordResetRemember = require('../models/user-pwd-reset-remember');
+const ApiMessages = require('../models/api-messages');
+const Notes = require('../models/notes');
 
 const router = express.Router();
 
@@ -62,10 +64,34 @@ router.route('/account/resetpasswordremember').post((req, res) => {
                                                                         res.send(response));
 });
 
+function getData(req, res) {
+  if (req.session.userProfileModel) {
+    Notes.findOne({ email: req.session.userProfileModel.email }, (err, res1) => {
+      if (err) {
+        console.log(err);
+        res.send(new ApiResponse({
+          success: false, extras: { msg: ApiMessages.DB_ERROR }
+        }));
+      } else {
+        res.send(new ApiResponse({ success: true, 
+          extras: {
+            userProfileModel: req.session.userProfileModel,
+            data: res1,
+          } }));
+      }
+    });
+  } else {
+    res.send(new ApiResponse({ success: false, extras: { msg: ApiMessages.UNAUTHORITHED } }));
+  }
+}
+
+router.route('/account/getdata')
+  .post(getData)
+  .get(getData);
+
 router.route('/account/test').post((req, res) => {
-    User.remove({}).exec();
-    User.find({}, (err, res1) => console.log(res1));
-    res.send('');
+    res.send(JSON.stringify(req.session));
+    // res.send('');
 });
 
 module.exports = router;

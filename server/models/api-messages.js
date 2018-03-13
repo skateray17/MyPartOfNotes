@@ -12,5 +12,6 @@ ApiMessages.COULD_NOT_RESET_PASSWORD = 10;
 ApiMessages.PASSWORD_CONFIRM_MICMATCH = 11;
 ApiMessages.COULD_NOT_CREATE_SESSION = 13;
 ApiMessages.INVALID_IND = 14;
+ApiMessages.UNAUTHORITHED = 15;
 
 module.exports = ApiMessages;
