@@ -2,6 +2,7 @@ const express = require('express');
 const Notes = require('../models/notes');
 const ApiResponse = require('../models/api-response');
 const ApiMessages = require('../models/api-messages');
+const mailer = require('../models/mailer');
 
 const router = express.Router();
 
@@ -16,7 +17,7 @@ router.route('/notes/create')
         }
         if (result) {
           const notes = result.notes;
-          notes.push(req.body.note);
+          notes.unshift(JSON.parse(req.body.note));
           Notes.update({ email: req.session.userProfileModel.email }, { notes }, (error) => {
             if (error) {
               res.send(new ApiResponse({ success: false, extras: { msg: ApiMessages.DB_ERROR } }));
@@ -54,12 +55,12 @@ router.route('/notes/edit')
         if (err) {
           res.send(new ApiResponse({ success: false, extras: { msg: ApiMessages.DB_ERROR } }));
         }
-        const notes = result.notes;
-        if (req.body.index >= notes.length || req.body.index < 0) {
+        if (req.body.index >= result.notes.length || req.body.index < 0) {
           res.send(new ApiResponse({ success: false, extras: { msg: ApiMessages.INVALID_IND } }));
         } else {
-          notes[req.body.index] = req.body.newNote;
-          Notes.update({ email: req.session.userProfileModel.email }, { notes }, (error) => {
+          result.notes.splice(req.body.index, 1);
+          result.notes.unshift(JSON.parse(req.body.newNote));
+          Notes.update({ email: req.session.userProfileModel.email }, result, (error) => {
             if (error) {
               res.send(new ApiResponse({ success: false, extras: { msg: ApiMessages.DB_ERROR } }));
             } else {
@@ -96,6 +97,22 @@ router.route('/notes/delete')
       });
     }
   });
+
+  router.route('/notes/report')
+    .post((req, res) => {
+      const ind = req.body.index;
+      const email = req.body.email;
+      Notes.findOne({ email: req.session.userProfileModel.email }, (err, result) => {
+        if (err) {
+          res.send(new ApiResponse({ success: false, extras: { msg: ApiMessages.DB_ERROR } }));
+        }
+        if (ind >= result.notes.length || req.body.index < 0) {
+          res.send(new ApiResponse({ success: false, extras: { msg: ApiMessages.INVALID_IND } }));
+        } else {
+          mailer.sendNoteReport(email, result.notes[ind], (a, b) => res.send(b));
+        }
+      });
+    });
 
   router.route('/notes/test')
   .post((req, res) => {

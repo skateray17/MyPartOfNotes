@@ -23,7 +23,8 @@ router.route('/account/register').post((req, res) => {
     const apiResponse1 = accountController.getUserFromUserRegistration(userRegistration);
     res.set('Access-Control-Allow-Origin', req.headers.origin);
     if (!apiResponse1.success) {
-        return apiResponse1;
+        res.send(new ApiResponse({ success: false, extras: apiResponse1 }));
+        return;
     }
     accountController.register(apiResponse1.extras.user, (err, apiResponse2) => 
                                 res.send(apiResponse2));

@@ -16,7 +16,7 @@ router.route('/folders/create')
         }
         if (result) {
           const folders = result.folders;
-          folders.push(req.body.folder);
+          folders.unshift(req.body.folder);
           Notes.update({ email: req.session.userProfileModel.email }, { folders }, (error) => {
             if (error) {
               res.send(new ApiResponse({ success: false, extras: { msg: ApiMessages.DB_ERROR } }));
@@ -44,33 +44,7 @@ router.route('/folders/get')
       });
     }
   });
-
-router.route('/folders/edit')
-  .post((req, res) => {
-    if (!req.session.userProfileModel) {
-      res.status(401).send('unauthorized');
-    } else {
-      Notes.findOne({ email: req.session.userProfileModel.email }, (err, result) => {
-        if (err) {
-          res.send(new ApiResponse({ success: false, extras: { msg: ApiMessages.DB_ERROR } }));
-        }
-        const folders = result.folders;
-        if (req.body.index >= folders.length || req.body.index < 0) {
-          res.send(new ApiResponse({ success: false, extras: { msg: ApiMessages.INVALID_IND } }));
-        } else {
-          folders[req.body.index] = req.body.newfolder;
-          Notes.update({ email: req.session.userProfileModel.email }, { folders }, (error) => {
-            if (error) {
-              res.send(new ApiResponse({ success: false, extras: { msg: ApiMessages.DB_ERROR } }));
-            } else {
-              res.send(new ApiResponse({ success: true }));
-            }
-          });
-        }
-      });
-    }
-  });
-
+  
 router.route('/folders/delete')
   .post((req, res) => {
     if (!req.session.userProfileModel) {
@@ -81,7 +55,8 @@ router.route('/folders/delete')
           res.send(new ApiResponse({ success: false, extras: { msg: ApiMessages.DB_ERROR } }));
         }
         const folders = result.folders;
-        if (req.body.index >= folders.length || req.body.index < 0) {
+        if (req.body.index === undefined || req.body.index >= folders.length ||
+                                                            req.body.index < 0) {
           res.send(new ApiResponse({ success: false, extras: { msg: ApiMessages.INVALID_IND } }));
         } else {
           folders.splice(req.body.index, 1);
